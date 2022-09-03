@@ -1,11 +1,15 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  first_name: { type: String, default: null },
-  last_name: { type: String, default: null },
+  firstName: { type: String, default: null },
+  lastName: { type: String, default: null },
   email: { type: String, default: null },
-  phoneNumber: { type: String, default: null },
-  address: { type: String, default: null },
+  phoneNumber: { type: Number, default: null },
+  streetAddress: { type: String, default: null },
+  state: { type: String, default: null },
+  city: { type: String, default: null },
+  pincode: { type: Number, default: null },
+  address: { type: String, unique: true },
 });
 
 module.exports = mongoose.model("User", userSchema);
