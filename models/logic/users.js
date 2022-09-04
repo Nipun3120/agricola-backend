@@ -3,7 +3,7 @@ const User = require("../db/users");
 const { createToken } = require("./authTokens");
 
 const checkUserAndReturnToken = async (address) => {
-  const existingUser = await User.findOne({ address });
+  const existingUser = await User.findOne({ metamaskAccount: address });
 
   if (existingUser) {
     // user exists in db
@@ -13,13 +13,14 @@ const checkUserAndReturnToken = async (address) => {
       config.TOKEN.ACCESS_SECRET,
       config.TIME.jwtExpiration
     );
-    return accessToken;
+    const userDetails = extractUserDetails(existingUser);
+    return { accessToken, userDetails };
   } else {
     // user does not exists in database,
     // create user and return token
 
     const newUser = await User.create({
-      address,
+      metamaskAccount: address,
     });
     return newUser.save().then((result) => {
       let accessToken = createToken(
@@ -27,7 +28,8 @@ const checkUserAndReturnToken = async (address) => {
         config.TOKEN.ACCESS_SECRET,
         config.TIME.jwtExpiration
       );
-      return accessToken;
+      const userDetails = extractUserDetails(result);
+      return { accessToken, userDetails };
     });
   }
 };
@@ -59,17 +61,7 @@ const updateUserDetails = async (
       return { saved: false };
     }
   );
-  // user.firstName = firstName;
-  // user.lastName = lastName;
-  // user.email = email;
-  // user.phoneNumber = phoneNumber;
-  // user.streetAddress = streetAddress;
-  // user.state = state;
-  // user.city = city;
-  // user.pincode = pincode;
-  // return user
-  //   .save()
-
+  console.log(user);
   return { saved: true };
 };
 
@@ -111,8 +103,22 @@ const checkForNullValues = (
   return queryObject;
 };
 
+const extractUserDetails = (obj) => {
+  return {
+    firstName: obj.firstName,
+    lastName: obj.lastName,
+    email: obj.email,
+    phoneNumber: obj.phoneNumber,
+    streetAddress: obj.streetAddress,
+    state: obj.state,
+    city: obj.city,
+    pincode: obj.pincode,
+  };
+};
+
 module.exports = {
   checkUserAndReturnToken,
   updateUserDetails,
   fetchUserDetails,
+  extractUserDetails,
 };

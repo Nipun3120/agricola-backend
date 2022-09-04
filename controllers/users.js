@@ -8,6 +8,7 @@ const {
   checkUserAndReturnToken,
   fetchUserDetails,
   updateUserDetails,
+  extractUserDetails,
 } = require("../models/logic/users");
 
 router.post("/login", async (req, res) => {
@@ -15,18 +16,28 @@ router.post("/login", async (req, res) => {
     const { address, accessToken } = req.body;
     const existingUser = await getUserFromToken(accessToken);
     if (existingUser) {
-      if (existingUser.address === address) {
+      if (existingUser.metamaskAccount === address) {
         // verified, return
-        res.json({ accessToken: token.split(" ")[1] }).status(200);
+        const userDetails = extractUserDetails(existingUser);
+        res
+          .json({
+            accessToken: token.split(" ")[1],
+            userDetails,
+          })
+          .status(200);
       } else {
         // user have a token which is not linked with the provided address
         // create new token for corresponding to this address
-        const accessToken = await checkUserAndReturnToken(address);
-        res.json({ accessToken }).status(200);
+        const { accessToken, userDetails } = await checkUserAndReturnToken(
+          address
+        );
+        res.json({ accessToken, userDetails }).status(200);
       }
     } else {
-      const accessToken = await checkUserAndReturnToken(address);
-      res.json({ accessToken }).status(200);
+      const { accessToken, userDetails } = await checkUserAndReturnToken(
+        address
+      );
+      res.json({ accessToken, userDetails }).status(200);
     }
   } catch (err) {
     console.log("throwing error", err);
@@ -46,6 +57,16 @@ router.post("/save_profile", verifyToken, async (req, res) => {
     city,
     pincode,
   } = req.body;
+  console.log(
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    streetAddress,
+    state,
+    city,
+    pincode
+  );
   const result = await updateUserDetails(
     uid,
     firstName,
