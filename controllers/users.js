@@ -6,15 +6,14 @@ const User = require("../models/db/users");
 const { createToken, getUserFromToken } = require("../models/logic/authTokens");
 const {
   checkUserAndReturnToken,
-  saveUserDetils,
   fetchUserDetails,
+  updateUserDetails,
 } = require("../models/logic/users");
 
 router.post("/login", async (req, res) => {
   try {
-    const { address } = req.body;
-    let token = req.headers["authorization"];
-    const existingUser = await getUserFromToken(token);
+    const { address, accessToken } = req.body;
+    const existingUser = await getUserFromToken(accessToken);
     if (existingUser) {
       if (existingUser.address === address) {
         // verified, return
@@ -47,7 +46,7 @@ router.post("/save_profile", verifyToken, async (req, res) => {
     city,
     pincode,
   } = req.body;
-  const result = await saveUserDetils(
+  const result = await updateUserDetails(
     uid,
     firstName,
     lastName,

@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema({
   state: { type: String, default: null },
   city: { type: String, default: null },
   pincode: { type: Number, default: null },
-  address: { type: String, unique: true },
+  metamaskAccount: { type: String, unique: true },
+  // isAdmin
 });
 
 module.exports = mongoose.model("User", userSchema);
