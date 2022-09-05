@@ -9,6 +9,7 @@ const {
   fetchUserDetails,
   updateUserDetails,
   extractUserDetails,
+  saveKycDetails,
 } = require("../models/logic/users");
 
 router.post("/login", async (req, res) => {
@@ -85,6 +86,15 @@ router.post("/fetch_user_details", verifyToken, async (req, res) => {
   const uid = req.user.uid;
   const userDetails = await fetchUserDetails(uid);
   res.json({ userDetails }).status(200);
+});
+
+router.post("submit_kyc_details", verifyToken, async (req, res) => {
+  const user = req.user;
+  if (user.metamaskAccount == req.body.address) {
+    // same user which is currently logged in
+    const result = await saveKycDetails(user, req.body.kycDetails);
+    res.json({ saved: result.saved }).status(200);
+  }
 });
 
 module.exports = router;

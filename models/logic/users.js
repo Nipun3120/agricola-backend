@@ -116,9 +116,28 @@ const extractUserDetails = (obj) => {
   };
 };
 
+const saveKycDetails = async (user, kycDetails) => {
+  user.aadhaarNumber = kycDetails.aadhaarNumber;
+  user.panNumber = kycDetails.panNumber;
+  user.income = kycDetails.income;
+  user.occupation = kycDetails.occupation;
+  user.about = kycDetails.about;
+  user
+    .save()
+    .then((result) => {
+      console.log("kyc details saved: ", result);
+      return { saved: true };
+    })
+    .catch((err) => {
+      console.log("error in saving kyc details: ", err);
+      return { saved: false };
+    });
+};
+
 module.exports = {
   checkUserAndReturnToken,
   updateUserDetails,
   fetchUserDetails,
   extractUserDetails,
+  saveKycDetails,
 };
