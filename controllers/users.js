@@ -10,6 +10,7 @@ const {
   updateUserDetails,
   extractUserDetails,
   saveKycDetails,
+  updateKycDetails,
 } = require("../models/logic/users");
 
 router.post("/login", async (req, res) => {
@@ -58,16 +59,6 @@ router.post("/save_profile", verifyToken, async (req, res) => {
     city,
     pincode,
   } = req.body;
-  console.log(
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    streetAddress,
-    state,
-    city,
-    pincode
-  );
   const result = await updateUserDetails(
     uid,
     firstName,
@@ -88,13 +79,33 @@ router.post("/fetch_user_details", verifyToken, async (req, res) => {
   res.json({ userDetails }).status(200);
 });
 
-router.post("submit_kyc_details", verifyToken, async (req, res) => {
-  const user = req.user;
-  if (user.metamaskAccount == req.body.address) {
-    // same user which is currently logged in
-    const result = await saveKycDetails(user, req.body.kycDetails);
-    res.json({ saved: result.saved }).status(200);
-  }
+// router.post("submit_kyc_details", verifyToken, async (req, res) => {
+//   const user = req.user;
+//   if (user.metamaskAccount == req.body.address) {
+//     // same user which is currently logged in
+//     const result = await saveKycDetails(user, req.body.kycDetails);
+//     res.json({ saved: result.saved }).status(200);
+//   } else res.json({ saved: false }).status(400);
+// });
+
+router.post("/update_kyc_details", async (req, res) => {
+  const {
+    metamaskAccount,
+    aadhaarNumber,
+    panNumber,
+    income,
+    occupation,
+    about,
+  } = req.body;
+  const result = await updateKycDetails(
+    metamaskAccount,
+    aadhaarNumber,
+    panNumber,
+    income,
+    occupation,
+    about
+  );
+  res.json({ saved: result.saved }).status(200);
 });
 
 module.exports = router;
