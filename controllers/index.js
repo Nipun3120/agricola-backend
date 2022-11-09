@@ -5,6 +5,7 @@ router.use(cors());
 
 router.use("/user", require("./users"));
 router.use("/admin", require("./adminKyc"));
+router.use("/admin-user", require("./approveRequests"));
 
 // default
 router.get("/", function (req, res) {
