@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   about: { type: String, default: null },
 
   isKycVerified: { type: Boolean, default: false },
-  kycStatus: { type: String, default: "incomplete" },
+  kycStatus: { type: String, default: "incomplete" }, // incomplete -> pending -> approved
   isAdmin: { type: Boolean, default: false },
 });
 
