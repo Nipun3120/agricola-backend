@@ -45,7 +45,7 @@ const updateUserDetails = async (
   city,
   pincode
 ) => {
-  const updateUpject = checkForNullValues(
+  const updateObject = checkForNullValues(
     firstName,
     lastName,
     email,
@@ -55,7 +55,7 @@ const updateUserDetails = async (
     city,
     pincode
   );
-  const user = await User.findOneAndUpdate({ _id: uid }, updateUpject).catch(
+  const user = await User.findOneAndUpdate({ _id: uid }, updateObject).catch(
     (err) => {
       console.log("error in updating user profile, err: ", err);
       return { saved: false };
@@ -76,6 +76,13 @@ const fetchUserDetails = async (uid) => {
     state: user.state,
     city: user.city,
     pincode: user.pincode,
+    aadhaarNumber: user.aadhaarNumber,
+    panNumber: user.panNumber,
+    income: user.income,
+    occupation: user.occupation,
+    about: user.about,
+    isKycVerified: user.isKycVerified,
+    kycStatus: user.kycStatus,
   };
   return userDetails;
 };
@@ -88,17 +95,29 @@ const checkForNullValues = (
   streetAddress,
   state,
   city,
-  pincode
+  pincode,
+  aadhaarNumber,
+  panNumber,
+  income,
+  occupation,
+  about
 ) => {
   const queryObject = {};
-  if (firstName.length) queryObject.firstName = firstName;
-  if (lastName.length) queryObject.lastName = lastName;
-  if (email.length) queryObject.email = email;
-  if (phoneNumber.length) queryObject.phoneNumber = phoneNumber;
-  if (streetAddress.length) queryObject.streetAddress = streetAddress;
-  if (state.length) queryObject.state = state;
-  if (city.length) queryObject.city = city;
-  if (pincode.length) queryObject.pincode = pincode;
+  if (firstName && firstName.length) queryObject.firstName = firstName;
+  if (lastName && lastName.length) queryObject.lastName = lastName;
+  if (email && email.length) queryObject.email = email;
+  if (phoneNumber && phoneNumber.length) queryObject.phoneNumber = phoneNumber;
+  if (streetAddress && streetAddress.length)
+    queryObject.streetAddress = streetAddress;
+  if (state && state.length) queryObject.state = state;
+  if (city && city.length) queryObject.city = city;
+  if (pincode && pincode.length) queryObject.pincode = pincode;
+  if (aadhaarNumber && aadhaarNumber.length)
+    queryObject.aadhaarNumber = aadhaarNumber;
+  if (panNumber && panNumber.length) queryObject.panNumber = panNumber;
+  if (income && income.length) queryObject.income = income;
+  if (occupation && occupation.length) queryObject.occupation = occupation;
+  if (about && about.length) queryObject.about = about;
   console.log(queryObject);
   return queryObject;
 };
@@ -113,7 +132,50 @@ const extractUserDetails = (obj) => {
     state: obj.state,
     city: obj.city,
     pincode: obj.pincode,
+    aadhaarNumber: obj.aadhaarNumber,
+    panNumber: obj.panNumber,
+    income: obj.income,
+    occupation: obj.occupation,
+    about: obj.about,
+    isKycVerified: obj.isKycVerified,
+    kycStatus: obj.kycStatus,
   };
+};
+
+const updateKycDetails = async (
+  metamaskAccount,
+  aadhaarNumber,
+  panNumber,
+  income,
+  occupation,
+  about
+) => {
+  const updateObject = checkForNullValues(
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    aadhaarNumber,
+    panNumber,
+    income,
+    occupation,
+    about
+  );
+  updateObject.kycStatus = "pending";
+  console.log("metamaskAccount: ", metamaskAccount);
+  const user = await User.findOneAndUpdate(
+    { metamaskAccount: metamaskAccount },
+    updateObject
+  ).catch((err) => {
+    console.log("error in updating user profile, err: ", err);
+    return { saved: false };
+  });
+  console.log("user after updation: ", user);
+  return { saved: true };
 };
 
 module.exports = {
@@ -121,4 +183,5 @@ module.exports = {
   updateUserDetails,
   fetchUserDetails,
   extractUserDetails,
+  updateKycDetails,
 };

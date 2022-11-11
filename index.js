@@ -1,5 +1,5 @@
 require("dotenv").config();
-require("./config/database").connect();
+const db = require("./config/database");
 const http = require("http");
 const express = require("express");
 const app = express();
@@ -15,6 +15,8 @@ app.use(require("./controllers"));
 const port = process.env.PORT || 4000;
 
 // server listening
-server.listen(port, () => {
+server.listen(port, async () => {
+  console.log('initializing...')
+  await db.connect()
   console.log(`Server running on port ${port}`);
 });
